@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.PackageDao">
+
+    <!--新增-->
+    <insert id="add" parameterType="com.itheima.pojo.Package">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_package
+        (code,name,sex,age,helpCode,price,remark,attention,img)
+        values
+        (#{code},#{name},#{sex},#{age},#{helpCode},#{price},#{remark},#{attention},#{img})
+    </insert>
+
+    <update id="setPackageAndCheckGroup" parameterType="java.lang.Integer">
+        insert into t_package_checkgroup (package_id, checkgroup_id)
+      values (#{pkgId}, #{checkGroupId})
+    </update>
+
+    <select id="selectByCondition" resultType="com.itheima.pojo.Package" parameterType="string">
+        SELECT * FROM t_package
+        <if test="value != null and value.length > 0">
+            WHERE code = #{value} or name = #{value} or helpCode = #{value}
+        </if>
+    </select>
+
+    <!--mobile-->
+    <select id="findAll" resultType="com.itheima.pojo.Package">
+        SELECT * FROM t_package
+    </select>
+
+    <select id="findById2" parameterType="int" resultMap="packageCheckGroupCheckItemResultMap">
+        select * From t_package where id=#{id}
+    </select>
+
+
+    <select id="findById" parameterType="int" resultMap="pkgCheckGroupItem">
+        select p.*,
+            cg.id as checkgroup_id, cg.name as checkgroup_name,cg.remark as checkgroup_remark,
+            ci.id as checkitem_id, ci.name as checkitem_name
+        from t_package p, t_checkgroup cg, t_checkitem ci,
+        t_package_checkgroup pcg, t_checkgroup_checkitem cgci
+        where
+        p.id = pcg.package_id and pcg.checkgroup_id=cg.id and
+        cg.id = cgci.checkgroup_id and ci.id=cgci.checkitem_id
+        and
+        p.id=#{id}
+    </select>
+
+    <resultMap id="pkgCheckGroupItem" type="Package" extends="packageResultMap">
+        <collection property="checkGroups" ofType="CheckGroup" javaType="ArrayList" column="checkgroup_id">
+            <id column="checkgroup_id" property="id"/>
+            <result column="checkgroup_name" property="name"/>
+            <result column="checkgroup_remark" property="remark"/>
+            <collection property="checkItems" ofType="CheckItem" javaType="ArrayList" column="checkitem_id">
+                <id column="checkitem_id" property="id"/>
+                <result column="checkitem_name" property="name"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="packageResultMap" type="Package">
+        <id property="id" column="id" />
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="helpCode" column="helpCode"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="price" column="price"/>
+        <result property="remark" column="remark"/>
+        <result property="attention" column="attention"/>
+        <result property="img" column="img"/>
+    </resultMap>
+
+    <resultMap id="packageCheckGroupCheckItemResultMap" extends="packageResultMap" type="Package">
+        <!--通过套餐编号查询套餐下的检查组-->
+        <collection property="checkGroups" javaType="ArrayList" ofType="CheckGroup" column="id"
+                    select="com.itheima.dao.CheckGroupDao.findByPackageId">
+        </collection>
+    </resultMap>
+</mapper>
+    
