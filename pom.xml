@@ -30,7 +30,7 @@
         <!--编译后的版本-->
         <maven.compiler.target>1.8</maven.compiler.target>
         <junit.version>4.12</junit.version>
-        <spring.version>5.0.8.RELEASE</spring.version>
+        <spring.version>5.2.3.RELEASE</spring.version>
         <!--分页插件-->
         <pagehelper.version>4.1.4</pagehelper.version>
         <!--启动加载的servlet容器-->
