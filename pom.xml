@@ -49,7 +49,7 @@
         <!--安全框架-->
         <spring.security.version>5.0.5.RELEASE</spring.security.version>
         <!--操作excel-->
-        <poi.version>3.14</poi.version>
+        <poi.version>4.1.2</poi.version>
         <!--操作redis-->
         <jedis.version>2.7.0</jedis.version>
         <!--定时任务-->
